@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lucky Jet Сигнал</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      padding: 20px;
+    }
+    h1 {
+      color: #00ffc8;
+      font-size: 28px;
+      text-align: center;
+    }
+    .round {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #161b22;
+      border: 2px solid #238636;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #23863688;
+    }
+    .item {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    .item strong {
+      color: #ffa657;
+    }
+    code {
+      background: #21262d;
+      color: #7ee787;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Lucky Jet Сигнал</h1>
+  <div id="output">🔄 Загрузка...</div>
+
+  <script>
+    const API_URL = 'https://crash-gateway-orc-cr.gamedev-tech.cc/history';
+    const params = {
+      id_n: '01961b11-3302-74d5-9609-fcce6c9a7843',
+      id_i: '077dee8d-c923-4c02-9bee-757573662e69',
+      round_id: '01980e33-c3c3-72e1-b4c6-8171a727d2be'
+    };
+
+    function getEmojiForCoeff(coeff) {
+      if (coeff >= 100) return '💎🔥';
+      if (coeff >= 50) return '💰🚀';
+      if (coeff >= 10) return '🤑📈';
+      if (coeff >= 5) return '🎯✅';
+      if (coeff >= 2) return '📈';
+      if (coeff >= 1.5) return '⚡️';
+      return '😢📉';
+    }
+
+    async function fetchRound() {
+      try {
+        const query = new URLSearchParams(params).toString();
+        const response = await fetch(`${API_URL}?${query}`);
+        const data = await response.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          document.getElementById('output').innerText = 'Нет данных.';
+          return;
+        }
+
+        const round = data[0];
+        const emoji = getEmojiForCoeff(round.top_coefficient);
+
+        document.getElementById('output').innerHTML = `
+          <div class="round">
+            <div class="item"><strong>🎲 Новый сигнал</strong> ${emoji}</div>
+            <div class="item"><strong>📊 Коэффициент:</strong> <code>${round.top_coefficient}x</code></div>
+            <div class="item"><strong>🆔 ID:</strong> <code>${round.id}</code></div>
+            <div class="item"><strong>🔐 Хэш:</strong> <code>${round.result_hash}</code></div>
+            <div class="item"><strong>🧂 Соль:</strong> <code>${round.salt || 'не найдено'}</code></div>
+            <div class="item"><strong>🕓 Время:</strong> <code>${new Date().toLocaleString('ru-RU')}</code></div>
+          </div>
+        `;
+      } catch (e) {
+        document.getElementById('output').innerText = '⚠️ Ошибка загрузки данных';
+      }
+    }
+
+    fetchRound();
+    setInterval(fetchRound, 5000);
+  </script>
+</body>
+</html>
